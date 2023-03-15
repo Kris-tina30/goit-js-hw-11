@@ -1,9 +1,6 @@
 import axios from 'axios';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
-export { getPhoto };
-export { page };
-export { limit };
-export { incrementPage };
+
 
 const BASE_URL = `https://pixabay.com/api/`;
 const API_KEY = `34297240-c049c9b9a2b820e4864b20225`;
@@ -78,3 +75,4 @@ function incrementPage() {
 
 // }
 // `https://pixabay.com/api/?key=34297240-c049c9b9a2b820e4864b20225&q=${searchFormInput}&image_type=photo&orientation=horizontal&safesearch=true&per_page=40&page=${page}`
+export { getPhoto, page, limit, incrementPage };

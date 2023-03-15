@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
+
 import { getPhoto } from './getPhoto';
 import { limit } from './getPhoto';
 import { page } from './getPhoto';
