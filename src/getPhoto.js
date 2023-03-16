@@ -21,9 +21,6 @@ async function getPhoto(searchFormInput, page) {
   });
 
   const { hits, totalHits } = await response.data;
-  // const  =  response.data.totalHits;
-  // console.log(hits);
-  // console.log(totalHits);
 
   if (hits.length === 0) {
     Notify.warning(
@@ -33,7 +30,7 @@ async function getPhoto(searchFormInput, page) {
     Notify.success(`Hooray! We found ${totalHits} images.`);
 
     console.log(response.data);
-    return response.data;
+    return response;
   }
 }
 

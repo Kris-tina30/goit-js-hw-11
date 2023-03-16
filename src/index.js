@@ -2,7 +2,6 @@ import axios from 'axios';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 
 import { getPhoto, limit } from './getPhoto';
-export { page };
 
 let searchFormInput = '';
 let page = 1;
@@ -23,26 +22,26 @@ async function onSubmit(e) {
   page = 1;
   galleryCard.innerHTML = '';
 
-  
   const response = await getPhoto(searchFormInput, page);
   const hits = await response.data.hits;
-  
-  console.log(response.data.hits);
 
-  renderPhotos();
+  markUpPhotos(hits);
   incrementPage();
   if (page >= 1) {
     return toggleButton();
   }
 }
 
-  async function onClick() {
-  getPhoto(searchFormInput, page).then(renderPhotos);
-  incrementPage();
+async function onClick() {
   const response = await getPhoto(searchFormInput, page);
+
   const totalHits = await response.data.totalHits;
-  console.log(response.data.totalHits);
-  if (page*limit >= totalHits) {
+
+  markUpPhotos(response.data.hits);
+
+  incrementPage();
+
+  if (page * limit >= totalHits) {
     Notify.warning(
       " We're sorry, but you've reached the end of search results."
     );
@@ -84,10 +83,6 @@ function markUpPhotos(hits) {
     )
     .join('');
   galleryCard.insertAdjacentHTML('beforeend', markUp);
-}
-
-function renderPhotos(hits) {
-  markUpPhotos(hits);
 }
 
 // function resetPage() {
@@ -140,13 +135,6 @@ function incrementPage() {
 
 //   ApiService.getPhoto().then(renderPhotos);
 // }
-
-
-
-
-
-
-
 
 // async function onSubmit(e) {
 //   e.preventDefault();
@@ -229,3 +217,4 @@ function incrementPage() {
 // function incrementPage() {
 //   page += 1;
 // }
+export { page };
