@@ -1,13 +1,13 @@
 import axios from 'axios';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
-
+import { page } from './index';
 
 const BASE_URL = `https://pixabay.com/api/`;
 const API_KEY = `34297240-c049c9b9a2b820e4864b20225`;
-let page = 1;
+
 let limit = 40;
 
-async function getPhoto(searchFormInput) {
+async function getPhoto(searchFormInput, page) {
   const response = await axios.get(`${BASE_URL}`, {
     params: {
       key: `${API_KEY}`,
@@ -16,7 +16,7 @@ async function getPhoto(searchFormInput) {
       orientation: `horizontal`,
       safesearch: `true`,
       per_page: limit,
-      page: page,
+      page,
     },
   });
 
@@ -31,12 +31,10 @@ async function getPhoto(searchFormInput) {
     );
   } else {
     Notify.success(`Hooray! We found ${totalHits} images.`);
-    incrementPage();
-    return hits;
+
+    console.log(response.data);
+    return response.data;
   }
-}
-function incrementPage() {
-  page += 1;
 }
 
 // export default class ApiService {
@@ -75,4 +73,5 @@ function incrementPage() {
 
 // }
 // `https://pixabay.com/api/?key=34297240-c049c9b9a2b820e4864b20225&q=${searchFormInput}&image_type=photo&orientation=horizontal&safesearch=true&per_page=40&page=${page}`
-export { getPhoto, page, limit, incrementPage };
+
+export { getPhoto, limit };
