@@ -1,11 +1,9 @@
-import axios from 'axios';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 
 import { getPhoto, limit } from './getPhoto';
 
 let searchFormInput = '';
 let page = 1;
-let isButtonVisible = false;
 
 const submitForm = document.querySelector('#search-form');
 const loadMoreButton = document.querySelector('.load-more');
@@ -17,36 +15,52 @@ loadMoreButton.addEventListener('click', onClick);
 
 async function onSubmit(e) {
   e.preventDefault();
-  searchFormInput = e.currentTarget.elements.searchQuery.value;
+  try {
+    searchFormInput = e.currentTarget.elements.searchQuery.value;
+    if (searchFormInput.trim() === '') return;
+    page = 1;
 
-  page = 1;
-  galleryCard.innerHTML = '';
+    galleryCard.innerHTML = '';
 
-  const response = await getPhoto(searchFormInput, page);
-  const hits = await response.data.hits;
+    const response = await getPhoto(searchFormInput, page);
 
-  markUpPhotos(hits);
-  incrementPage();
-  if (page >= 1) {
-    return toggleButton();
-  }
+    const hits = response.data.hits;
+    const totalHits = response.data.totalHits;
+
+    markUpPhotos(hits);
+
+    if (hits.length === 0) {
+      Notify.warning(
+        'Sorry, there are no images matching your search query. Please try again.'
+      );
+      return;
+    }
+
+    Notify.success(`Hooray! We found ${totalHits} images.`);
+
+    if (page >= 1) {
+      return toggleButton();
+    }
+  } catch (error) {}
 }
 
 async function onClick() {
-  const response = await getPhoto(searchFormInput, page);
+  try {
+    incrementPage();
+    const response = await getPhoto(searchFormInput, page);
 
-  const totalHits = await response.data.totalHits;
+    const totalHits = response.data.totalHits;
 
-  markUpPhotos(response.data.hits);
+    markUpPhotos(response.data.hits);
 
-  incrementPage();
-
-  if (page * limit >= totalHits) {
-    Notify.warning(
-      " We're sorry, but you've reached the end of search results."
-    );
-    loadMoreButton.classList.add('visually-hidden');
-  }
+    if (page * limit >= totalHits) {
+      Notify.warning(
+        " We're sorry, but you've reached the end of search results."
+      );
+      loadMoreButton.classList.add('visually-hidden');
+      return;
+    }
+  } catch (error) {}
 }
 
 function markUpPhotos(hits) {
@@ -85,15 +99,7 @@ function markUpPhotos(hits) {
   galleryCard.insertAdjacentHTML('beforeend', markUp);
 }
 
-// function resetPage() {
-//   page = 1;
-// }
-
 function toggleButton() {
-  if (isButtonVisible) {
-    return;
-  }
-  isButtonVisible = true;
   loadMoreButton.classList.remove('visually-hidden');
 }
 
@@ -101,120 +107,4 @@ function incrementPage() {
   page += 1;
 }
 
-// function toggleLoadButton() {
-//   if (page >= totalHits) {
-//     Notify.warning(
-//      " We're sorry, but you've reached the end of search results."
-//     );
-//     loadMoreButton.classList.add('visually-hidden');
-//   }
-// }
-
-// import ApiService from './getPhoto';
-// const ApiService = new ApiService();
-// console.log(ApiService);
-
-// const options = {
-
-//     // key: '34297240-c049c9b9a2b820e4864b20225',
-//     // q: `${searchFormInput}`,
-//     image_type: 'photo',
-//     orientation: 'horizontal',
-//     safesearch: 'true',
-
-// };
-// function onSubmit(e) {
-//   e.preventDefault();
-//   ApiService.photo = e.currentTarget.elements.searchQuery.value;
-
-//   ApiService.getPhoto()
-//   .then(renderPhotos);
-// }
-
-// function onClick(e) {
-
-//   ApiService.getPhoto().then(renderPhotos);
-// }
-
-// async function onSubmit(e) {
-//   e.preventDefault();
-//   searchFormInput = e.currentTarget.elements.searchQuery.value;
-
-//   page = 1;
-//   galleryCard.innerHTML = '';
-
-//   getPhoto(searchFormInput, page).then(renderPhotos);
-
-//   incrementPage();
-//   if (page >= 1 && page < 500) {
-//     return toggleButton();
-//   }
-// }
-
-// function onClick() {
-//   getPhoto(searchFormInput, page).then(renderPhotos);
-//   incrementPage();
-//   if (page >= totalHits) {
-//     Notify.warning(
-//       " We're sorry, but you've reached the end of search results."
-//     );
-//     loadMoreButton.classList.add('visually-hidden');
-//   }
-// }
-
-// function markUpPhotos(hits) {
-//   const markUp = hits
-//     .map(
-//       ({
-//         webformatURL,
-//         largeImageURL,
-//         tags,
-//         likes,
-//         views,
-//         comments,
-//         downloads,
-//       }) => {
-//         return `
-//   <div class="photo-card">
-//   <img src="${webformatURL}" alt="${tags}" loading="${largeImageURL}" width = "270" hight = "180" />
-//   <div class="info">
-//     <p class="info-item">
-//       <b>Likes ${likes}</b>
-//     </p>
-//     <p class="info-item">
-//       <b>Views ${views}</b>
-//     </p>
-//     <p class="info-item">
-//       <b>Comments ${comments}</b>
-//     </p>
-//     <p class="info-item">
-//       <b>Downloads ${downloads}</b>
-//     </p>
-//   </div>
-// </div>  `;
-//       }
-//     )
-//     .join('');
-//   galleryCard.insertAdjacentHTML('beforeend', markUp);
-// }
-
-// function renderPhotos(hits) {
-//   markUpPhotos(hits);
-// }
-
-// // function resetPage() {
-// //   page = 1;
-// // }
-
-// function toggleButton() {
-//   if (isButtonVisible) {
-//     return;
-//   }
-//   isButtonVisible = true;
-//   loadMoreButton.classList.remove('visually-hidden');
-// }
-
-// function incrementPage() {
-//   page += 1;
-// }
 export { page };
