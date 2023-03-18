@@ -11,7 +11,7 @@ const galleryCard = document.querySelector('.gallery');
 
 submitForm.addEventListener('submit', onSubmit);
 
-loadMoreButton.addEventListener('click', onClick);
+loadMoreButton.addEventListener('click', onClickLoadMoreButton);
 
 async function onSubmit(e) {
   e.preventDefault();
@@ -41,10 +41,13 @@ async function onSubmit(e) {
     if (page >= 1) {
       return toggleButton();
     }
-  } catch (error) {}
+  } catch (error) {
+    console.dir(error);
+    Notify.failure(` ${error.message}`);
+  }
 }
 
-async function onClick() {
+async function onClickLoadMoreButton() {
   try {
     incrementPage();
     const response = await getPhoto(searchFormInput, page);
@@ -60,7 +63,10 @@ async function onClick() {
       loadMoreButton.classList.add('visually-hidden');
       return;
     }
-  } catch (error) {}
+  } catch (error) {
+    console.dir(error);
+    Notify.failure(` ${error.message}`);
+  }
 }
 
 function markUpPhotos(hits) {
